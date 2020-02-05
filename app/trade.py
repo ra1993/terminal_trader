@@ -1,3 +1,2 @@
-
-
 class Trade:
+    pass

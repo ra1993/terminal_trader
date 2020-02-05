@@ -12,6 +12,19 @@ def main_menu():
     else:
         bad_input()
 
+def create_account():
+
+    print("Thank you for making an account, please enter account details!")
+    f_name = input("Please enter your first name")
+    l_name = input("Please enter your last name")
+    user_name = input("Please enter your username")
+    password = input("Please enter your password")
+    deposit = input("Please state how much you'd like to deposit")
+
+    return user_name, password, f_name, l_name, deposit 
+
+
+    
 
 def login_menu():
     print("What would you like to do?")
@@ -26,7 +39,6 @@ def login_menu():
     print("9. Lookup")
     print("10. Logout")
  
-
     choices = ['1','2', '3', '4', '5', '6', '7', '8', '9', '10']
 
     if choice not in choices:

@@ -1,16 +1,24 @@
 import hashlib
 import requests
 import json
+import bcrypt
+
 
 #for initializing token object
-with open("creds.txt", 'r') as file_object:
-    token = file_object.readline()
-   
-SALT = "lkjhgfdsertyujd2345678765432345".encode()
 
-def hash_password(password):
-    hashed_pw = hashlib.sha512(password.encode() + SALT).hexdigest()
-    return hashed_pw
+with open("app/credentials/creds.txt", 'r') as file_object:
+    token = file_object.readline()
+    
+   
+# SALT = "lkjhgfdsertyujd2345678765432345".encode()
+
+# def hash_password(password):
+#     hashed_pw = hashlib.sha512(password.encode() + SALT).hexdigest()
+#     return hashed_pw
+
+def crypt_password(password):
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    return hashed
 
 def get_price(ticker, token):
     #TODO: get price from IEX Cloud API
@@ -23,7 +31,10 @@ def get_price(ticker, token):
     #print(data)
     return data['latestPrice']
 
-print(get_price("TSLA", token))
+    
+
+
+
 
 
 
