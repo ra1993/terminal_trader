@@ -3,6 +3,7 @@ import sqlite3
 from .util import get_price, crypt_password
 from .position import Position
 from .trade import Trade
+import bcrypt
 
 
 class Account:
@@ -14,10 +15,11 @@ class Account:
         self.pk = kwargs.get('pk')
         self.account_num = str(random.randint(100000000000, 999999999999))
         self.username = kwargs.get("username")
-        self.password = kwargs.get("crypt_password")
+        self.crypt_password = kwargs.get("crypt_password")
         self.f_name = kwargs.get("f_name")
         self.l_name = kwargs.get("l_name")
         self.balance = kwargs.get('balance')
+        self.salt = kwargs.get("salt")
         
 
     def save(self):     #saves file
@@ -30,11 +32,11 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """
-            INSERT INTO {} (account_num, username, f_name, l_name, password, balance)
+            INSERT INTO {} (account_num, username, f_name, l_name, password, balance, salt)
             VALUES(?,?,?,?,?,?);
             """.format(self.tablename)
 
-            values = (self.account_num, self.username, self.password, self.f_name, self.l_name, self.balance)
+            values = (self.account_num, self.username, self.password, self.f_name, self.l_name, self.balance, self.salt)
             cur.execute(sql, values)
             
 
@@ -42,10 +44,10 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """UPDATE {} SET
-                     username = ?, f_name = ?, l_name = ?, password = ?, balance = ?, 
+                     username = ?, f_name = ?, l_name = ?, password = ?, balance = ?, salt = ?,
                      WHERE pk = ?;
             """.format(self.tablename)
-            values = (self.username, self.password, self.f_name, self.l_name, self.balance, self.pk)
+            values = (self.username, self.password, self.f_name, self.l_name, self.balance, self.pk, self.salt)
 
 
 
@@ -54,7 +56,28 @@ class Account:
         
     def login(cls, username, password):
 
-        return cls.select_one_where("WHERE username=? AND password=?", username, password_hash)
+        return cls.select_one_where("WHERE username=? AND password=?", username, crypt_password)
+        with sqlite3.connect(cls.dbpath) as conn:
+            cur = conn.cursor()
+            sql= f"""SELECT * FROM {cls.tablename} WHERE username == ?
+            """
+            cur.execute(sql, (username,)) 
+            user_account = cur.fetchall()
+
+            if len(user_account) == 0:
+                return False
+
+            conn.row_factory = sqlite.Row
+            cur = conn.cursor()
+            cur.execute(sql,(username,))
+            user_account = cur.fetchone()
+            user_account = cls(**user_account)
+
+            if not bcrypt.checkpw(password, user_account.crypt_password): #checking password against crypt password
+                return False
+            else:
+                return user.account
+
         #When the user logs in, and is prompted what todo
         #if username doesnt equal username in database
         

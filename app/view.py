@@ -6,15 +6,15 @@ def main_menu():
     print("3. Exit")
     
     choices = ['1','2', '3']
+    choice = input()
 
-    if choice not in choices:
-        return choice
-    else:
-        bad_input()
+    while choice not in choices:
+        choice = input("Invalid input, please try again!")
+    return choice
 
 def create_account():
 
-    print("Thank you for making an account, please enter account details!")
+    print("Thank you for making an account, please enter account details: ")
     f_name = input("Please enter your first name")
     l_name = input("Please enter your last name")
     user_name = input("Please enter your username")
@@ -24,7 +24,32 @@ def create_account():
     return user_name, password, f_name, l_name, deposit 
 
 
-    
+
+#create account
+# def f_name():
+#     print("Please enter your first name: ")
+#     return input()
+
+# def l_name():
+#     print("Please enter your last name: ")
+#     return input()
+
+# def username():
+#     print("Please enter a new username: ")
+#     return input()
+
+# def create_password():
+#     password = input("Please enter your password")
+#     return password
+
+# def initial_deposit():
+#     return("How much would you like to deposit?")
+
+#---------------------------------------------------------------------
+def user_login():
+    username = input("Please provide username: ")
+    password = input("Please provide password: ")
+    return username, password
 
 def login_menu():
     print("What would you like to do?")
@@ -46,10 +71,22 @@ def login_menu():
     else:
         bad_input()
 
+#----------------------------------Buy
 
 
+
+
+
+#----------------------------------
+
+
+
+#bad functions----------------------
 def bad_input():
     print("Invalid Input!")
 
+def bad_login():
+    print("Invalid Login! Please try again!")
 
+print(create_account("gamerboy", "rich", "amin", 2345678))
 
