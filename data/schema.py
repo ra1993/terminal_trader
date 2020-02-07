@@ -4,6 +4,9 @@ import os
 DIR = os.path.dirname(__file__)
 DBPATH = os.path.join(DIR, 'terminal_trader.db')
 
+#volume in lots = 100 shares
+#note to self, to delete db and run schema again to make a new one
+
 def schema(db = DBPATH):
     with sqlite3.connect(db) as conn:
         cur = conn.cursor()
@@ -24,13 +27,12 @@ def schema(db = DBPATH):
         cur.execute(
         """     CREATE TABLE trades(
                 pk INTEGER PRIMARY KEY AUTOINCREMENT,
-                ticker_id VARCHAR (20),
                 account_pk INTEGER,
-                volume INTEGER,
-                buy INTEGER,
-                sell INTEGER,
-                price REAL,
                 time INTEGER,
+                ticker VARCHAR,
+                price FLOAT,
+                volume FLOAT,
+                market_value FLOAT,  
                 FOREIGN KEY (account_pk) REFERENCES account(pk)
             );""")
         cur.execute("""DROP TABLE IF EXISTS position""")
@@ -38,7 +40,8 @@ def schema(db = DBPATH):
         """
                 CREATE TABLE position(
                 pk INTEGER PRIMARY KEY AUTOINCREMENT,
-                num_shares INTEGER,
+                ticker VARCHAR,
+                lots INTEGER,
                 account_pk INTEGER,
                 FOREIGN KEY (account_pk) REFERENCES account(pk)
             );""")

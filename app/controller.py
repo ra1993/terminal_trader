@@ -1,7 +1,9 @@
 from app.account import Account
+from app.trade import Trade
+from app.position import Position
 from app import view
+from app.util import get_price, token #ask about this
 import bcrypt
-
 
 def run():
 
@@ -9,33 +11,18 @@ def run():
         choice = view.main_menu()
 
         if choice == '1':
-            #view.create_account()
             account_create()
-
         elif choice == '2':
-            #account.login()
             user_login()
         elif choice == '3':
             exit(0)
-
 
 def crypt_password(password):
     #salt = bcrypt.gensalt()
     hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     return hashed_pw
 
-
-
 def account_create():
-    # view.create_account()
-    #new_account = view.create_account()
-    # user_name = view.user_name()
-    # password = view.create_password()
-    # crypted_password = crypt_password(password)
-    # f_name = view.f_name()
-    # l_name = view.l_name()
-    # deposit = view.initial_deposit()
-
     username, password, f_name, l_name, deposit = view.create_account() #takes all return values from create_account
     crypted_password = crypt_password(password)
     new_account = Account(username = username, crypted_password = crypted_password, f_name = f_name, l_name = l_name, balance = deposit)
@@ -43,40 +30,37 @@ def account_create():
 
 def user_login():
     username, password = view.user_login() #pass username and password from view.user_login
-    
     user_account = Account.login(username, password) #passes entered username and password to login check in account class
-    
+    print(user_account, "CREATE INSTANCE++++++++++++++++++++")
     if user_account == False: #checks user
         print("invalid login")
         username, password = view.user_login()
         user_account = Account.login(username, password) #passes username and password to login function in account class
     else:
-        login_loop()          #if user passes login check will loop to following login menu function
-
-
-    
-
-def login_loop():
-
+        print("Welcome: ",user_account.username)
+        
+        login_loop(user_account)          #if user passes login check will loop to following login menu function
+        
    
+def login_loop(user_account):
     while True:
         choice = view.login_menu()
         if choice == '1':
-            buy()
+            buy(user_account)
         elif choice == '2':
-            sell()
+            sell(user_account)
         elif choice == '3':
-            trades()
+            trades(user_account)
         elif choice == '4':
-            withdraw()
+            withdraw(user_account)
         elif choice == '5':
-            deposit()
+            deposit(user_account)
         elif choice == '6':
-            balance()
+            balance(user_account)
         elif choice == '7':
-            get_positions()
+            get_positions(user_account)
         elif choice == '8':
-            get_trades()
+            get_trades(user_account)
         elif choice == '9':
             look_up()
         elif choice == '10':
@@ -84,25 +68,35 @@ def login_loop():
 
 def buy():
     ticker, quantity = view.buy()
-
+    user_account = user_login()
+    buy_shares = Account.buy_shares(None, ticker, quantity, None)
+    pass
 
 def sell():
     ticker, quantity = view.sell()
-
+    user_account = Account.login(username, password)
+    sell_shares = Account.buy_shares(None, ticker, quantity, None)
+    pass
 
 def trades():
     pass
 
-
-def withdraw():
-    pass
+def withdraw(user_account):
+    amount = view.withdraw()
+    if user_account.balance < amount:
+        print("Invalid Input")
+    else:
+        user_account.balance -= amount
+        user_account.save()
 
 def deposit():
-    pass
+    amount = view.deposit()
+    user_account.balance += amount
+    user_account.save()
 
-
-def balance():
-    pass
+def balance(user_account):
+    #TODO: make a view function do this
+    print("Your balance is: ", user_account.balance)
 
 def get_positions():
     pass
@@ -111,8 +105,10 @@ def view_trades():
     pass
 
 def look_up(): #select_one
-    pass
-
+    ticker = view.lookup_stock_price()
+    price = get_price(ticker, token)
+    print(f"The current price for {ticker} is: {price}")
+   
 def logout_exit():
     print("Thank you for your business. Have a nice day!")
     exit(0)

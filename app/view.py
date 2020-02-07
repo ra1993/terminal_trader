@@ -23,8 +23,6 @@ def create_account():
 
     return user_name, password, f_name, l_name, deposit 
 
-
-
 #create account
 # def f_name():
 #     print("Please enter your first name: ")
@@ -61,7 +59,7 @@ def login_menu():
     print("6. Balance")
     print("7. View Positions")
     print("8. View Trades")
-    print("9. Lookup")
+    print("9. Lookup Stock Price")
     print("10. Logout")
  
     choices = ['1','2', '3', '4', '5', '6', '7', '8', '9', '10']
@@ -77,16 +75,45 @@ def login_menu():
 def buy():
     
     ticker = input("Which company would you like to buy stocks from?")
-    how_many = input("How many shares would you like to buy?")
+    quantity = input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)")
   
 
-    return ticker, how_many
+    return ticker, quantity
 
 
+#----------------------------------Sell
+def sell():
+    
+    ticker = input("Which company would you like to buy stocks from?")
+    quantity = input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)")
+  
 
+    return ticker, quantity
+
+
+#----------------------------------Trade
+
+
+#----------------------------------Withdraw
+def withdraw():
+    amount = input("How much would you like to withdraw? ")
+    amount = float(amount)   
+    return amount
+
+#----------------------------------Deposit
+def deposit():
+    deposit = input("How much would you like to deposit? ")
+
+    return deposit
 
 #----------------------------------
 
+
+#----------------------------------
+def lookup_stock_price():
+    ticker = input("What stock would you like to look up? (Please enter ticker)")
+
+    return ticker
 
 
 #bad functions----------------------

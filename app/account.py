@@ -1,6 +1,6 @@
 import random
 import sqlite3
-from .util import get_price, crypt_password
+from .util import get_price, token
 from .position import Position
 from .trade import Trade
 import bcrypt
@@ -21,7 +21,6 @@ class Account:
         self.l_name = kwargs.get("l_name")
         self.balance = kwargs.get('balance')
                
-
     def save(self):     #saves file
         if self.pk is None:
             self._insert()
@@ -44,10 +43,11 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """UPDATE {} SET
-                     username = ?, f_name = ?, l_name = ?, crypted_password = ?, balance = ?,
+                     username = ?, f_name = ?, l_name = ?, crypted_password = ?, balance = ?
                      WHERE pk = ?;
             """.format(self.tablename)
             values = (self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.pk)
+            cur.execute(sql, values)
 
     @classmethod
     def select_one(cls, pk):
@@ -87,9 +87,11 @@ class Account:
         #if username doesnt equal username in database
         
        
-    def buy(self, ticker, quantity):
+    def buy_shares(self, ticker, quantity):
         """checks if ticker exists and if sufficient funds exist for this user"""
         """create a new trade and modify a position as well as user's balance. returns nothing"""
+
+        current_value = get_price(ticker, token)
 
         if self.balance < market_value:
             return False
@@ -101,16 +103,46 @@ class Account:
         else:
             position.shares += shares
         
+        trade = Trade(None, self.pk, ticker, shares, price, market_value, time.time())
+        position.save()
+        trade.save()
+        return position
+
+
+    # def account_withdrawl(self, amount):
+
+    #     if amount > self.balance:
+    #         # print("Error, you're not that rich, chill out.")
+    #         # withdraw = input("How much would you like to withdraw? ")
+    #         return None
+    #     self.balance -= amount
+    #     # self.save()
+    #     return self
+        
+
+    # def account_deposit(self, deposit):
+
+    #     if deposit > self.balance:
+    #         print("Error, you're not that rich, chill out.")
+    #         withdraw = input("How much would you like to deposit? ")
+    
+    #     new_balance = self.balance - float(deposit)
+
+    #     return new_balance
+    #     pass
+
+
+        
         #save our user instance
-        pass
 
     # def sell(self, ticker, quantity):
     #     """make a sale. checks if a stock exists in user's positions and has sufficient shares and creates a new trade"""
     #    """and modfies the position as well as adding to the user's balance. returns nothing""" 
     #     pass
 
-    # def select_one_where(cls, where_clause, values = tuple{}):
-    #     pass
+   
+    def balance(self):
+        return self.balance
 
     
     # def get_positions(self):
@@ -122,5 +154,11 @@ class Account:
 
     # def get_position_for(self, ticker):
     #     return Position.select_one("WHERE account_pk=? AND ticker =?", (self.pk, ticker))
+
+
+account = Account() #for testing purposes
+
+
+
 
 
