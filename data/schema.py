@@ -13,13 +13,12 @@ def schema(db = DBPATH):
         """
                 CREATE TABLE account (
                 pk INTEGER PRIMARY KEY AUTOINCREMENT,
-                account_num VARCHAR,
-                username VARCHAR (40),
-                password TEXT, 
-                f_name VARCHAR(128),
-                l_name TEXT,
-                balance FLOAT,
-                salt TEXT 
+                account_num VARCHAR UNIQUE,
+                username VARCHAR UNIQUE,
+                crypted_password VARCHAR, 
+                f_name VARCHAR,
+                l_name VARCHAR,
+                balance FLOAT
             );""")
         cur.execute("""DROP TABLE IF EXISTS trades""")
         cur.execute(

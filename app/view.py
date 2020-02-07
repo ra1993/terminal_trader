@@ -65,14 +65,22 @@ def login_menu():
     print("10. Logout")
  
     choices = ['1','2', '3', '4', '5', '6', '7', '8', '9', '10']
-
+    
+    choice = input()
     if choice not in choices:
-        return choice
-    else:
         bad_input()
+    else:
+        return choice
+        
 
 #----------------------------------Buy
+def buy():
+    
+    ticker = input("Which company would you like to buy stocks from?")
+    how_many = input("How many shares would you like to buy?")
+  
 
+    return ticker, how_many
 
 
 
@@ -84,9 +92,11 @@ def login_menu():
 #bad functions----------------------
 def bad_input():
     print("Invalid Input!")
+    
 
 def bad_login():
     print("Invalid Login! Please try again!")
+    
 
-print(create_account("gamerboy", "rich", "amin", 2345678))
+
 

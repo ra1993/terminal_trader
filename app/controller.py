@@ -3,30 +3,31 @@ from app import view
 import bcrypt
 
 
-def main_loop():
+def run():
 
     while True:
         choice = view.main_menu()
 
         if choice == '1':
-            view.create_account()
+            #view.create_account()
+            account_create()
 
         elif choice == '2':
             #account.login()
-            user_login():
+            user_login()
         elif choice == '3':
-            exit(1)
+            exit(0)
 
 
 def crypt_password(password):
-    salt = bcrypt.gensalt()
-    hashed_pw = bcrypt.hashpw(password, salt)
-    return hashed_pw, salt
+    #salt = bcrypt.gensalt()
+    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    return hashed_pw
 
 
 
 def account_create():
-    
+    # view.create_account()
     #new_account = view.create_account()
     # user_name = view.user_name()
     # password = view.create_password()
@@ -36,53 +37,85 @@ def account_create():
     # deposit = view.initial_deposit()
 
     username, password, f_name, l_name, deposit = view.create_account() #takes all return values from create_account
-    crypted_password, salt = crypt_password(password)
-    new_account = Account(None, user_name, crypted_password, f_name, l_name, deposit, salt)
-
+    crypted_password = crypt_password(password)
+    new_account = Account(username = username, crypted_password = crypted_password, f_name = f_name, l_name = l_name, balance = deposit)
     new_account.save()
 
 def user_login():
-    username, password = view.user_login() #passed username and password from view.user_login
-    while user_account == False: #checks user
-        view.bad_login()
+    username, password = view.user_login() #pass username and password from view.user_login
+    
+    user_account = Account.login(username, password) #passes entered username and password to login check in account class
+    
+    if user_account == False: #checks user
+        print("invalid login")
+        username, password = view.user_login()
         user_account = Account.login(username, password) #passes username and password to login function in account class
-        user = Account.login(username, password)
+    else:
+        login_loop()          #if user passes login check will loop to following login menu function
 
-        if user == True:
-            login_loop()          #if user passes login check will loop to following login menu function
-        else:
-            print("invalid login")
+
     
 
-# def login_loop():
+def login_loop():
 
-      
-#     while True:
-#         choice = view.login_menu():
-#         loginaccount = account.Account()
-#         if choice == '1':
-#             loginaccount.buy()
-#         elif choice == '2':
-#             loginaccount.sell()
-#         elif choice == '3':
-#             #loginaccount.get_trades()
-#         elif choice == '4':
-#             loginaccount.withdraw()
-#         elif choice == '5':
-#             loginaccount.deposit()
-#         # elif choice == '6':
-#         #     loginaccount.balance()
-#         elif choice == '7':
-#             loginaccount.get_positions()
-#         elif choice == '8':
-#             loginaccount.get_trades()
-#         elif choice == '9':
-#             loginaccount.select_one_where()
-#         elif choice == '10':
-#             exit(1)
+   
+    while True:
+        choice = view.login_menu()
+        if choice == '1':
+            buy()
+        elif choice == '2':
+            sell()
+        elif choice == '3':
+            trades()
+        elif choice == '4':
+            withdraw()
+        elif choice == '5':
+            deposit()
+        elif choice == '6':
+            balance()
+        elif choice == '7':
+            get_positions()
+        elif choice == '8':
+            get_trades()
+        elif choice == '9':
+            look_up()
+        elif choice == '10':
+            logout_exit()
+
+def buy():
+    ticker, quantity = view.buy()
 
 
+def sell():
+    ticker, quantity = view.sell()
 
+
+def trades():
+    pass
+
+
+def withdraw():
+    pass
+
+def deposit():
+    pass
+
+
+def balance():
+    pass
+
+def get_positions():
+    pass
+
+def view_trades():
+    pass
+
+def look_up(): #select_one
+    pass
+
+def logout_exit():
+    print("Thank you for your business. Have a nice day!")
+    exit(0)
 
 if __name__ == "__main__":
-    main_loop()
+    run()

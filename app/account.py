@@ -4,6 +4,7 @@ from .util import get_price, crypt_password
 from .position import Position
 from .trade import Trade
 import bcrypt
+#from app import ORM
 
 
 class Account:
@@ -15,12 +16,11 @@ class Account:
         self.pk = kwargs.get('pk')
         self.account_num = str(random.randint(100000000000, 999999999999))
         self.username = kwargs.get("username")
-        self.crypt_password = kwargs.get("crypt_password")
+        self.crypted_password = kwargs.get("crypted_password")
         self.f_name = kwargs.get("f_name")
         self.l_name = kwargs.get("l_name")
         self.balance = kwargs.get('balance')
-        self.salt = kwargs.get("salt")
-        
+               
 
     def save(self):     #saves file
         if self.pk is None:
@@ -32,11 +32,11 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """
-            INSERT INTO {} (account_num, username, f_name, l_name, password, balance, salt)
+            INSERT INTO {} (account_num, username, crypted_password, f_name, l_name,  balance)
             VALUES(?,?,?,?,?,?);
             """.format(self.tablename)
 
-            values = (self.account_num, self.username, self.password, self.f_name, self.l_name, self.balance, self.salt)
+            values = (self.account_num, self.username, self.crypted_password, self.f_name, self.l_name, self.balance)
             cur.execute(sql, values)
             
 
@@ -44,49 +44,65 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """UPDATE {} SET
-                     username = ?, f_name = ?, l_name = ?, password = ?, balance = ?, salt = ?,
+                     username = ?, f_name = ?, l_name = ?, crypted_password = ?, balance = ?,
                      WHERE pk = ?;
             """.format(self.tablename)
-            values = (self.username, self.password, self.f_name, self.l_name, self.balance, self.pk, self.salt)
+            values = (self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.pk)
 
+    @classmethod
+    def select_one(cls, pk):
+        #selects one entry from the database
+        with sqlite3.connect(cls.dbpath) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
 
+            sql = f"""SELECT * FROM {cls.tablename} WHERE pk =?;"""
+            cur.execute(sql, (pk,))
+            row = cur.fetchone()
+            return cls(**row)
 
-    # @classmethod
-    # def login(cls, username, password):
-        
+    @classmethod
     def login(cls, username, password):
 
-        return cls.select_one_where("WHERE username=? AND password=?", username, crypt_password)
+        # return cls.select_one_where("WHERE username=? AND password=?", username, crypted_password)
         with sqlite3.connect(cls.dbpath) as conn:
+            conn.row_factory = sqlite3.Row
             cur = conn.cursor()
             sql= f"""SELECT * FROM {cls.tablename} WHERE username == ?
             """
             cur.execute(sql, (username,)) 
-            user_account = cur.fetchall()
-
-            if len(user_account) == 0:
+            row = cur.fetchone()
+            
+            if row is None:
                 return False
-
-            conn.row_factory = sqlite.Row
-            cur = conn.cursor()
-            cur.execute(sql,(username,))
-            user_account = cur.fetchone()
-            user_account = cls(**user_account)
-
-            if not bcrypt.checkpw(password, user_account.crypt_password): #checking password against crypt password
+            print("Inside login classmethod: ", row)
+            user_account = cls(**row)
+ 
+            if not bcrypt.checkpw(password.encode(), user_account.crypted_password): #checking password against crypt password
                 return False
             else:
-                return user.account
+                return user_account
 
         #When the user logs in, and is prompted what todo
         #if username doesnt equal username in database
         
        
-    # def buy(self, ticker, quantity):
-    #     """checks if ticker exists and if sufficient funds exist for this user"""
-    #     """create a new trade and modify a position as well as user's balance. returns nothing"""
-    #     #save our user instance
-    #     pass
+    def buy(self, ticker, quantity):
+        """checks if ticker exists and if sufficient funds exist for this user"""
+        """create a new trade and modify a position as well as user's balance. returns nothing"""
+
+        if self.balance < market_value:
+            return False
+        
+        ticker = ticker.upper() #capitalizes the ticker
+        position = Position.select_one(ticker)
+        if position == False:
+            position = Position(None, ticker, shares, self.pk)
+        else:
+            position.shares += shares
+        
+        #save our user instance
+        pass
 
     # def sell(self, ticker, quantity):
     #     """make a sale. checks if a stock exists in user's positions and has sufficient shares and creates a new trade"""
