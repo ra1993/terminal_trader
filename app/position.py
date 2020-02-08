@@ -27,12 +27,12 @@ class Position:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """
-            INSERT INTO {} (ticker, shares, account_pk)
+            INSERT INTO {} (ticker, lots, account_pk)
 
             VALUES(?,?,?);
             """.format(self.tablename)
 
-            values = (self.ticker, self.shares, self.account_pk)
+            values = (self.ticker, self.lots, self.account_pk)
             cur.execute(sql, values)
 
 
@@ -41,29 +41,23 @@ class Position:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """UPDATE {} SET
-                    ticker = ?, shares = ?, account_pk = ?,
+                    ticker = ?, lots = ?, account_pk = ?
                     WHERE pk = ?;
             """.format(self.tablename)
-            values = (self.ticker, self.shares, self.account_pk, self.pk)
+            values = (self.ticker, self.lots, self.account_pk, self.pk)
             cur.execute(sql, values)
 
-
     @classmethod
-    def _select_one(cls, ticker):
+    def select_one(cls, ticker, user_account_pk):
         with sqlite3.connect(cls.dbpath) as conn:
-            cur = conn.cursor()
-            sql = f"""SELECT * FROM {cls.tablename} WHERE ticker == ?"""
-            cur.execute(sql, (ticker,))
-            position = cur.fetchall()
-
-            if len(position) == 0:
-                return False
-
             conn.row_factory = sqlite3.Row
-
             cur = conn.cursor()
-            cur.execute(sql, (ticker,))
+            sql = f"""SELECT * FROM {cls.tablename} WHERE account_pk = ? AND ticker = ?"""
+            cur.execute(sql, (user_account_pk, ticker))
             position = cur.fetchone()
+
+            if not position:
+                return None
             position = cls(**position)
             return position
 

@@ -78,7 +78,8 @@ class Account:
             print("Inside login classmethod: ", row)
             user_account = cls(**row)
  
-            if not bcrypt.checkpw(password.encode(), user_account.crypted_password): #checking password against crypt password
+            # if not bcrypt.checkpw(password.encode(), user_account.crypted_password): #checking password against crypt password
+            if user_account.crypted_password != password.encode():
                 return False
             else:
                 return user_account
@@ -93,58 +94,45 @@ class Account:
 
         current_value = get_price(ticker, token)
 
-        if self.balance < market_value:
+        if self.balance < current_value:
             return False
+
+        self.balance -= current_value
         
-        ticker = ticker.upper() #capitalizes the ticker
-        position = Position.select_one(ticker)
-        if position == False:
-            position = Position(None, ticker, shares, self.pk)
+        position = Position.select_one(ticker, self.pk)
+        if position is  None:
+            position = Position(None, ticker, quantity, self.pk)
         else:
-            position.shares += shares
+            position.lots += quantity
         
-        trade = Trade(None, self.pk, ticker, shares, price, market_value, time.time())
+        trade = Trade(None, self.pk, ticker, quantity, 10, current_value) 
+        #           self, pk, account_pk, ticker, volume, price, market_value
         position.save()
         trade.save()
-        return position
+        self.save()
 
+    def sell_shares(self, ticker, quantity):
+            """checks if ticker exists and if sufficient funds exist for this user"""
+            """create a new trade and modify a position as well as user's balance. returns nothing"""
 
-    # def account_withdrawl(self, amount):
+            current_value = get_price(ticker, token)
 
-    #     if amount > self.balance:
-    #         # print("Error, you're not that rich, chill out.")
-    #         # withdraw = input("How much would you like to withdraw? ")
-    #         return None
-    #     self.balance -= amount
-    #     # self.save()
-    #     return self
-        
+            position = Position.select_one(ticker, self.pk)
 
-    # def account_deposit(self, deposit):
+            if position.lots < quantity:
+                return
+            
+            self.balance += current_value
+            
+            position.lots -= quantity
 
-    #     if deposit > self.balance:
-    #         print("Error, you're not that rich, chill out.")
-    #         withdraw = input("How much would you like to deposit? ")
+            
+            trade = Trade(None, self.pk, ticker, 0 - quantity, 10, current_value)
+            position.save()
+            trade.save()
+            self.save()  
     
-    #     new_balance = self.balance - float(deposit)
 
-    #     return new_balance
-    #     pass
-
-
-        
-        #save our user instance
-
-    # def sell(self, ticker, quantity):
-    #     """make a sale. checks if a stock exists in user's positions and has sufficient shares and creates a new trade"""
-    #    """and modfies the position as well as adding to the user's balance. returns nothing""" 
-    #     pass
-
-   
-    def balance(self):
-        return self.balance
-
-    
     # def get_positions(self):
     #     #returns a list of position objects/tuple
     #     return Position.select_all("WHERE account_pk=?", {self.pk,})
@@ -156,7 +144,6 @@ class Account:
     #     return Position.select_one("WHERE account_pk=? AND ticker =?", (self.pk, ticker))
 
 
-account = Account() #for testing purposes
 
 
 

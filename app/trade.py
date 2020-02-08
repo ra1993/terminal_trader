@@ -1,22 +1,22 @@
 import sqlite3
+import time
 import os
 
 DIR = os.path.dirname(__file__)
 DBPATH = os.path.join(DIR, "./data/terminal_trader.db")
 
-
 class Trade:
     dbpath = ""
     tablename = "trades"
     
-    def __init__(self, pk, account_pk, ticker, volume, price, market_value, time):
+    def __init__(self, pk, account_pk, ticker, volume, price, market_value):
         self.pk = pk
         self.account_pk = account_pk
         self.ticker = ticker
         self.price = price
         self.volume = volume
         self.market_value = market_value
-        self.time = time
+        self.time = time.time()
     
     def save(self):
         if self.pk is None:
@@ -27,7 +27,7 @@ class Trade:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
 
-            sql = """INSERT INTO {} (account_pk, ticker, volume, price, market_value, time)}
+            sql = """INSERT INTO {} (account_pk, ticker, volume, price, market_value, time)
                 VALUES(?,?,?,?,?,?)""".format(self.tablename)
 
             values = (self.account_pk, self.ticker, self.volume, self.price, self.market_value, self.time)

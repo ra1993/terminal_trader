@@ -19,7 +19,8 @@ def run():
 
 def crypt_password(password):
     #salt = bcrypt.gensalt()
-    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    # hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    hashed_pw = password.encode()
     return hashed_pw
 
 def account_create():
@@ -31,7 +32,7 @@ def account_create():
 def user_login():
     username, password = view.user_login() #pass username and password from view.user_login
     user_account = Account.login(username, password) #passes entered username and password to login check in account class
-    print(user_account, "CREATE INSTANCE++++++++++++++++++++")
+    print(user_account)
     if user_account == False: #checks user
         print("invalid login")
         username, password = view.user_login()
@@ -40,7 +41,6 @@ def user_login():
         print("Welcome: ",user_account.username)
         
         login_loop(user_account)          #if user passes login check will loop to following login menu function
-        
    
 def login_loop(user_account):
     while True:
@@ -66,17 +66,15 @@ def login_loop(user_account):
         elif choice == '10':
             logout_exit()
 
-def buy():
+def buy(user_account):
     ticker, quantity = view.buy()
-    user_account = user_login()
-    buy_shares = Account.buy_shares(None, ticker, quantity, None)
-    pass
+    buy_shares = user_account.buy_shares(ticker, quantity)
+ 
 
-def sell():
+def sell(user_account):
     ticker, quantity = view.sell()
-    user_account = Account.login(username, password)
-    sell_shares = Account.buy_shares(None, ticker, quantity, None)
-    pass
+    sell_shares = user_account.sell_shares(ticker, quantity)
+    
 
 def trades():
     pass
@@ -98,10 +96,10 @@ def balance(user_account):
     #TODO: make a view function do this
     print("Your balance is: ", user_account.balance)
 
-def get_positions():
+def get_positions(user_account):
     pass
 
-def view_trades():
+def view_trades(user_account):
     pass
 
 def look_up(): #select_one

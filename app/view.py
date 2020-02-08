@@ -1,3 +1,6 @@
+
+
+
 def main_menu():
 
     print("What would you like to do?")
@@ -75,19 +78,14 @@ def login_menu():
 def buy():
     
     ticker = input("Which company would you like to buy stocks from?")
-    quantity = input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)")
-  
-
+    quantity = int(input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)"))
     return ticker, quantity
 
 
 #----------------------------------Sell
 def sell():
-    
     ticker = input("Which company would you like to buy stocks from?")
-    quantity = input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)")
-  
-
+    quantity = int(input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)"))
     return ticker, quantity
 
 
@@ -107,7 +105,8 @@ def deposit():
     return deposit
 
 #----------------------------------
-
+def balance():
+    print("Your current balance is: ", "CREATE INSTANCE++++++++++++++++++++")
 
 #----------------------------------
 def lookup_stock_price():
