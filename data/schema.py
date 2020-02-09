@@ -21,7 +21,8 @@ def schema(db = DBPATH):
                 crypted_password VARCHAR, 
                 f_name VARCHAR,
                 l_name VARCHAR,
-                balance FLOAT
+                balance FLOAT,
+                api_key VARCHAR
             );""")
         cur.execute("""DROP TABLE IF EXISTS trades""")
         cur.execute(

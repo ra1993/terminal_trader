@@ -19,13 +19,14 @@ def run():
 
 def crypt_password(password):
     #salt = bcrypt.gensalt()
-    # hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    #hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     hashed_pw = password.encode()
     return hashed_pw
 
 def account_create():
     username, password, f_name, l_name, deposit = view.create_account() #takes all return values from create_account
     crypted_password = crypt_password(password)
+
     new_account = Account(username = username, crypted_password = crypted_password, f_name = f_name, l_name = l_name, balance = deposit)
     new_account.save()
 
@@ -39,7 +40,6 @@ def user_login():
         user_account = Account.login(username, password) #passes username and password to login function in account class
     else:
         print("Welcome: ",user_account.username)
-        
         login_loop(user_account)          #if user passes login check will loop to following login menu function
    
 def login_loop(user_account):
@@ -64,6 +64,8 @@ def login_loop(user_account):
         elif choice == '9':
             look_up()
         elif choice == '10':
+            get_api_key(user_account)
+        elif choice == '11':
             logout_exit()
 
 def buy(user_account):
@@ -87,7 +89,7 @@ def withdraw(user_account):
         user_account.balance -= amount
         user_account.save()
 
-def deposit():
+def deposit(user_account):
     amount = view.deposit()
     user_account.balance += amount
     user_account.save()
@@ -106,6 +108,11 @@ def look_up(): #select_one
     ticker = view.lookup_stock_price()
     price = get_price(ticker, token)
     print(f"The current price for {ticker} is: {price}")
+
+def get_api_key(user_account):
+    api_key = user_account.generate_api_key()
+    print("Your API Key is: ", api_key)
+
    
 def logout_exit():
     print("Thank you for your business. Have a nice day!")

@@ -4,6 +4,7 @@ from .util import get_price, token
 from .position import Position
 from .trade import Trade
 import bcrypt
+import string
 #from app import ORM
 
 
@@ -20,6 +21,7 @@ class Account:
         self.f_name = kwargs.get("f_name")
         self.l_name = kwargs.get("l_name")
         self.balance = kwargs.get('balance')
+        self.api_key = kwargs.get('api_key')
                
     def save(self):     #saves file
         if self.pk is None:
@@ -31,11 +33,11 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """
-            INSERT INTO {} (account_num, username, crypted_password, f_name, l_name,  balance)
-            VALUES(?,?,?,?,?,?);
+            INSERT INTO {} (account_num, username, crypted_password, f_name, l_name,  balance, api_key)
+            VALUES(?,?,?,?,?,?,?);
             """.format(self.tablename)
 
-            values = (self.account_num, self.username, self.crypted_password, self.f_name, self.l_name, self.balance)
+            values = (self.account_num, self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.api_key)
             cur.execute(sql, values)
             
 
@@ -43,12 +45,24 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             sql = """UPDATE {} SET
-                     username = ?, f_name = ?, l_name = ?, crypted_password = ?, balance = ?
+                     username = ?, f_name = ?, l_name = ?, crypted_password = ?, balance = ?, api_key = ?
                      WHERE pk = ?;
             """.format(self.tablename)
-            values = (self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.pk)
+            values = (self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.api_key, self.pk)
             cur.execute(sql, values)
 
+    def generate_api_key(self):
+        key = string.digits + string.ascii_letters
+        api_key = [''.join(random.choice(key) for i in range(20))]
+
+        api_key = str(api_key)
+
+        if self.api_key is None: #if api key doesnt exist, then update 
+            self.api_key = api_key
+
+        self.save()
+        return self.api_key
+        
     @classmethod
     def select_one(cls, pk):
         #selects one entry from the database
@@ -72,13 +86,13 @@ class Account:
             """
             cur.execute(sql, (username,)) 
             row = cur.fetchone()
-            
+            print("Inside login classmethod:>>>>>>>>>>>>>>>>> ", row)
             if row is None:
                 return False
-            print("Inside login classmethod: ", row)
+            print("Inside login classmethodNEXT:::::::::::::::: ", row)
             user_account = cls(**row)
  
-            # if not bcrypt.checkpw(password.encode(), user_account.crypted_password): #checking password against crypt password
+            #if not bcrypt.checkpw(password.encode('utf-8'), user_account.crypted_password()): #checking password against crypt password
             if user_account.crypted_password != password.encode():
                 return False
             else:

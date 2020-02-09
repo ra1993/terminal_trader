@@ -25,27 +25,6 @@ def create_account():
     deposit = input("Please state how much you'd like to deposit")
 
     return user_name, password, f_name, l_name, deposit 
-
-#create account
-# def f_name():
-#     print("Please enter your first name: ")
-#     return input()
-
-# def l_name():
-#     print("Please enter your last name: ")
-#     return input()
-
-# def username():
-#     print("Please enter a new username: ")
-#     return input()
-
-# def create_password():
-#     password = input("Please enter your password")
-#     return password
-
-# def initial_deposit():
-#     return("How much would you like to deposit?")
-
 #---------------------------------------------------------------------
 def user_login():
     username = input("Please provide username: ")
@@ -63,9 +42,10 @@ def login_menu():
     print("7. View Positions")
     print("8. View Trades")
     print("9. Lookup Stock Price")
-    print("10. Logout")
+    print("10. Get API KEY")
+    print("11. Logout")
  
-    choices = ['1','2', '3', '4', '5', '6', '7', '8', '9', '10']
+    choices = ['1','2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
     
     choice = input()
     if choice not in choices:
@@ -100,9 +80,9 @@ def withdraw():
 
 #----------------------------------Deposit
 def deposit():
-    deposit = input("How much would you like to deposit? ")
-
-    return deposit
+    amount = input("How much would you like to deposit? ")
+    amount = float(amount)   
+    return amount
 
 #----------------------------------
 def balance():
