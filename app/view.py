@@ -1,6 +1,7 @@
-
-
-
+# from app import controller
+# from app import Trade
+# from app import Account
+from app import controller
 def main_menu():
 
     print("What would you like to do?")
@@ -56,7 +57,6 @@ def login_menu():
 
 #----------------------------------Buy
 def buy():
-    
     ticker = input("Which company would you like to buy stocks from?")
     quantity = int(input("How many shares would you like to buy? (Buy in lots. 100 = 1 lot)"))
     return ticker, quantity
@@ -70,6 +70,11 @@ def sell():
 
 
 #----------------------------------Trade
+def view_trades():
+    pass
+    # ticker, volume, market_value = controller.controller_trades()
+
+    # print("For: ",ticker, "you have: ", volume, "at: $", market_value)
 
 
 #----------------------------------Withdraw
@@ -85,15 +90,22 @@ def deposit():
     return amount
 
 #----------------------------------
-def balance():
-    print("Your current balance is: ", "CREATE INSTANCE++++++++++++++++++++")
+def view_balance(account_balance):
+    print("Your current balance is: ", account_balance)
+    
+    
+def view_position():
+    current_position = controller.get_positions()
+    print("Your current positions are: ", current_position)
 
 #----------------------------------
 def lookup_stock_price():
     ticker = input("What stock would you like to look up? (Please enter ticker)")
-
     return ticker
 
+def show_api_key(key):
+    print("Your api_key: ", key)
+    
 
 #bad functions----------------------
 def bad_input():

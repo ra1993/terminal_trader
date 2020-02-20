@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+</head>
+<body>
+  <h1>Login Page</h1>
+  <p>{{ message }}</p>
+  <p class = "errortags">{{error}}</p>
+  <form action="/login" method="post">
+
+    <input name="username" type="text" placeholder="username"
+    value = "{{request.form.username}}"/>
+    <input name="password" type="password" placeholder="password"/>
+
+    <input class = "btn btn-default" type="submit" value = "Login"/>
+  </form>
+
+  <p>{{error}}</p>
+
+  <footer>
+  <a href = "mailto: webtraderdemo@example.com">Contact Us</a>
+  <a href = "mailto: webtraderdemo@example.com">About Us</a>
+
+  </footer>
+</body>

@@ -6,6 +6,8 @@ from .trade import Trade
 import bcrypt
 import string
 #from app import ORM
+from flask import Flask, jsonify, request, render_template
+
 
 
 class Account:
@@ -50,10 +52,10 @@ class Account:
             """.format(self.tablename)
             values = (self.username, self.crypted_password, self.f_name, self.l_name, self.balance, self.api_key, self.pk)
             cur.execute(sql, values)
-
+#-------------------------------------------------------------------Api_key functions
     def generate_api_key(self):
         key = string.digits + string.ascii_letters
-        api_key = [''.join(random.choice(key) for i in range(20))]
+        api_key = ''.join([random.choice(key) for i in range(20)])
 
         api_key = str(api_key)
 
@@ -62,6 +64,23 @@ class Account:
 
         self.save()
         return self.api_key
+
+    @classmethod
+    def api_authenticate(cls, api_key): #for api_key login test
+        with sqlite3.connect(cls.dbpath) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            sql= f"""SELECT * FROM {cls.tablename} WHERE api_key == ?
+            """
+            cur.execute(sql, (api_key,)) 
+            row = cur.fetchone()
+            print("Inside login classmethod:>>>>>>>>>>>>>>>>> ", row)
+            if row is None:
+                return False
+            print("Inside login classmethodNEXT:::::::::::::::: ", row)
+            user_account = cls(**row)
+ 
+            return user_account
         
     @classmethod
     def select_one(cls, pk):
@@ -86,21 +105,16 @@ class Account:
             """
             cur.execute(sql, (username,)) 
             row = cur.fetchone()
-            print("Inside login classmethod:>>>>>>>>>>>>>>>>> ", row)
             if row is None:
                 return False
-            print("Inside login classmethodNEXT:::::::::::::::: ", row)
+            
             user_account = cls(**row)
  
-            #if not bcrypt.checkpw(password.encode('utf-8'), user_account.crypted_password()): #checking password against crypt password
-            if user_account.crypted_password != password.encode():
+            if not bcrypt.checkpw(password.encode('utf-8'),user_account.crypted_password): #checking password against crypt password
+            #if user_account.crypted_password != password:
                 return False
             else:
                 return user_account
-
-        #When the user logs in, and is prompted what todo
-        #if username doesnt equal username in database
-        
        
     def buy_shares(self, ticker, quantity):
         """checks if ticker exists and if sufficient funds exist for this user"""
@@ -148,15 +162,31 @@ class Account:
     
 
     # def get_positions(self):
-    #     #returns a list of position objects/tuple
+    #         #returns a list of position objects/tuple
     #     return Position.select_all("WHERE account_pk=?", {self.pk,})
 
-    # def get_trades(self):
-    #     return Trade.select_all("WHERE account_pk=?", {self.pk,})
+    def get_trades(self):
+        return Trade.select_all("WHERE account_pk=?", {self.pk,})
 
-    # def get_position_for(self, ticker):
-    #     return Position.select_one("WHERE account_pk=? AND ticker =?", (self.pk, ticker))
+    def get_position_for(self, ticker):
+        return Position.select_one("WHERE account_pk=? AND ticker =?", (self.pk, ticker))
 
+
+    # @app.route("/", methods = ["GET"])
+    # def flask_balance(self):
+    #     account = Account.api_authenticate(api_token)
+    #     if not account:
+    #         return jsonify({"Error": "Access Denied"})
+    #     return jsonify({"username": account.username, "balance": account.balance})
+
+
+    #     return self.balance
+
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 

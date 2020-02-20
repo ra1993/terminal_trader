@@ -1,0 +1,11 @@
+{
+
+    "editor.tokenColorCustomizations": {
+    "comments":"#23d18b", 
+    "functions": "#967BB6",
+    "strings": "#f04e03b4",
+    "keywords": "#08c3f1",
+    "numbers": "#C0C0C0",
+    "variables": "#dac50ad2"
+    }
+}

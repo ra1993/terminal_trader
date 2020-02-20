@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+<title>Account Home</title>
+    <h1>Account Home</h1>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+</head>
+<body>
+{% if user_account %}
+        <h5>Welcome: {{username}}</h5>
+    {% else %}
+        <h5>Please login!</h5>
+    {% endif %}
+<form action="/home" method="get">
+
+<p>What would you like to do today?</p>
+<p>Account Balance: {{balance}}</p>
+<p>Account Number: {{account_number}}</p>
+    <div>
+    <form action="/create_account" method="POST"></form>
+        <li class = "menu"><a href = "/buy">Buy</a></li> 
+        <li class = "menu"><a href = "/sell">Sell</a></li> 
+        <li class = "menu"><a href = "/trade">Trade</a></li>
+        <li class = "menu"><a href = "/withdraw">Withdraw</a></li>
+        <li class = "menu"><a href = "/deposit">Deposit</a></li>
+        <li class = "menu"><a href = "/balance">Balance</a></li>
+        <li class = "menu"><a href = "/view_positions">View Positions</a></li>
+        <li class = "menu"><a href = "/view_trades">View Trades</a></li>
+        <li class = "menu"><a href = "/stock_price_lookup">Lookup Stock Price</a></li>
+        <li class = "menu"><a href = "/api_key">See API Key</a></li>
+        <li class = "menu"><a href = "/logout">Logout</a></li>
+    
+    </form>
+    </div>  
+
+
+<footer>
+    <a href = "mailto: webtraderdemo@example.com">Contact Us</a>
+    <a href = "mailto: webtraderdemo@example.com">About Us</a>
+
+</footer>
+</body>
+
+
+
+
+
+
+

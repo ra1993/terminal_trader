@@ -5,6 +5,9 @@ from app import view
 from app.util import get_price, token #ask about this
 import bcrypt
 
+dbpath = "./data/terminal_trader.db"
+
+
 def run():
 
     while True:
@@ -60,7 +63,7 @@ def login_loop(user_account):
         elif choice == '7':
             get_positions(user_account)
         elif choice == '8':
-            get_trades(user_account)
+            trades(user_account)
         elif choice == '9':
             look_up()
         elif choice == '10':
@@ -77,10 +80,6 @@ def sell(user_account):
     ticker, quantity = view.sell()
     sell_shares = user_account.sell_shares(ticker, quantity)
     
-
-def trades():
-    pass
-
 def withdraw(user_account):
     amount = view.withdraw()
     if user_account.balance < amount:
@@ -95,14 +94,19 @@ def deposit(user_account):
     user_account.save()
 
 def balance(user_account):
-    #TODO: make a view function do this
-    print("Your balance is: ", user_account.balance)
+    balance = user_account.balance
+    current_balance = view.view_balance(balance)
+    return current_balance
+
 
 def get_positions(user_account):
-    pass
+    view.view_position()
+    positions = user_account.get_positions_for()
+    return positions
 
-def view_trades(user_account):
-    pass
+def trades(user_account):
+    trade = user_account.get_trades()
+    return trade
 
 def look_up(): #select_one
     ticker = view.lookup_stock_price()
@@ -111,8 +115,8 @@ def look_up(): #select_one
 
 def get_api_key(user_account):
     api_key = user_account.generate_api_key()
-    print("Your API Key is: ", api_key)
-
+    key = view.show_api_key(api_key) #-------
+    return key
    
 def logout_exit():
     print("Thank you for your business. Have a nice day!")
